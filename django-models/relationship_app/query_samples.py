@@ -26,7 +26,8 @@ def list_books_in_library(library_name):
 def retrieve_librarian_for_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
-        librarian = library.librarian
+        # Use reverse relationship from Library to Librarian
+        librarian = library.librarian_set.first()
         return librarian
     except Library.DoesNotExist:
         return None
