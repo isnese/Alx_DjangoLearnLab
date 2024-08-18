@@ -1,58 +1,49 @@
-import django
 import os
+import django
 
-# Set up Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django-models.settings')
 django.setup()
 
 from relationship_app.models import Author, Book, Library, Librarian
 
-def query_books_by_author(author_name):
+# Query all books by a specific author
+def books_by_author(author_name):
     try:
         author = Author.objects.get(name=author_name)
         books = Book.objects.filter(author=author)
-        return books
+        for book in books:
+            print(book.title)
     except Author.DoesNotExist:
-        return []
+        print(f'Author "{author_name}" does not exist.')
 
-def list_books_in_library(library_name):
+# List all books in a library
+def books_in_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
         books = library.books.all()
-        return books
+        for book in books:
+            print(book.title)
     except Library.DoesNotExist:
-        return []
+        print(f'Library "{library_name}" does not exist.')
 
-def retrieve_librarian_for_library(library_name):
+# Retrieve the librarian for a library
+def librarian_for_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
-        # Assuming Library has a foreign key or one-to-one relationship to Librarian
-        librarian = library.librarian
-        return librarian
-    except Library.DoesNotExist:
-        return None
-
-if __name__ == "__main__":
-    # Example usage
-    print("Books by Author 'J.K. Rowling':")
-    books = query_books_by_author('J.K. Rowling')
-    if books:
-        for book in books:
-            print(book.title)
-    else:
-        print("No books found for the given author.")
-
-    print("\nBooks in Library 'Central Library':")
-    books = list_books_in_library('Central Library')
-    if books:
-        for book in books:
-            print(book.title)
-    else:
-        print("No books found in the given library.")
-
-    print("\nLibrarian for Library 'Central Library':")
-    librarian = retrieve_librarian_for_library('Central Library')
-    if librarian:
+        librarian = Librarian.objects.get(library=library)
         print(librarian.name)
-    else:
-        print("No librarian found for the given library.")
+    except Library.DoesNotExist:
+        print(f'Library "{library_name}" does not exist.')
+    except Librarian.DoesNotExist:
+        print(f'Librarian for library "{library_name}" does not exist.')
+
+# Example usage
+if __name__ == '__main__':
+    print("Books by Author:")
+    books_by_author('J.K. Rowling')
+    
+    print("\nBooks in Library:")
+    books_in_library('Central Library')
+    
+    print("\nLibrarian for Library:")
+    librarian_for_library('Central Library')
